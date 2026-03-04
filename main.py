@@ -1,6 +1,9 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from main_ui import Ui_MainWindow  
+from windows.main_ui import Ui_MainWindow  
+from windows.register_ui import Ui_Register
+from windows.login_ui import Ui_Login
+from windows.recipes_ui import Ui_recipes
 
 class MainWindow(QMainWindow):
     def __init__(self):
