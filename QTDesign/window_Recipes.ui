@@ -19,12 +19,12 @@
      <rect>
       <x>60</x>
       <y>30</y>
-      <width>101</width>
+      <width>291</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>Ingrese el ingrediente o receta que desee buscar</string>
     </property>
    </widget>
    <widget class="QTextEdit" name="txt_Recipes">
@@ -47,7 +47,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Buscar</string>
     </property>
    </widget>
    <widget class="QListView" name="lst_Recipes">

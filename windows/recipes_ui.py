@@ -16,7 +16,7 @@ class Ui_recipes(object):
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.lbl_Recipes = QtWidgets.QLabel(parent=self.centralwidget)
-        self.lbl_Recipes.setGeometry(QtCore.QRect(60, 30, 101, 16))
+        self.lbl_Recipes.setGeometry(QtCore.QRect(60, 30, 291, 16))
         self.lbl_Recipes.setObjectName("lbl_Recipes")
         self.txt_Recipes = QtWidgets.QTextEdit(parent=self.centralwidget)
         self.txt_Recipes.setGeometry(QtCore.QRect(60, 60, 251, 31))
@@ -38,5 +38,5 @@ class Ui_recipes(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.lbl_Recipes.setText(_translate("MainWindow", "TextLabel"))
-        self.btn_Recipes.setText(_translate("MainWindow", "PushButton"))
+        self.lbl_Recipes.setText(_translate("MainWindow", "Ingrese el ingrediente o receta que desee buscar"))
+        self.btn_Recipes.setText(_translate("MainWindow", "Buscar"))

@@ -5,11 +5,11 @@ from windows.main_ui import Ui_MainWindow
 from windows.register_ui import Ui_Register
 from windows.login_ui import Ui_Login
 from windows.recipes_ui import Ui_recipes
+from controllers.recipes_controller import RecipesController
 
 # Crear la base de datos al iniciar la aplicación
 from database import crear_db
 crear_db()
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -25,17 +25,18 @@ class MainWindow(QMainWindow):
         self.register_window = None
 
     def open_login(self):
-        """Show the login window and hide main window."""
+        """Abre la ventan de login y oculta la ventana principal."""
         if self.login_window is None:
             self.login_window = QMainWindow()
             self.login_ui = Ui_Login()
             self.login_ui.setupUi(self.login_window)
-            # Opcional: conecta señales desde la ventana de login aquí
+            # Conectar el botón de login a la función que maneja el proceso de login
+            self.login_ui.btn_login.clicked.connect(self.handle_login)
         self.login_window.show()
         self.hide()
 
     def open_register(self):
-        """Show the register window and hide main window."""
+        """Abre la ventana de registro y oculta la ventana principal."""
         if self.register_window is None:
             self.register_window = QMainWindow()
             self.register_ui = Ui_Register()
@@ -74,6 +75,11 @@ class MainWindow(QMainWindow):
         pwd1 = self.register_ui.txt_pwdRegister.toPlainText()
         pwd2 = self.register_ui.txt_pwdRegister2.toPlainText()
 
+        # Obtener opciones de dieta
+        dieta = self.register_ui.chk_dietRegisterY.isChecked()
+        vegano = self.register_ui.chk_veganRegisterY.isChecked()
+        vegetariano = self.register_ui.chk_vegetarianRegisterY.isChecked()
+
         if not user or not pwd1 or not pwd2:
             QMessageBox.warning(self.register_window, "Datos incompletos", "Debe completar todos los campos")
             return
@@ -84,7 +90,7 @@ class MainWindow(QMainWindow):
         try:
             conn = sqlite3.connect("usuarios.db")
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO usuarios (usuario, password) VALUES (?, ?)", (user, pwd1))
+            cursor.execute("INSERT INTO usuarios (usuario, password, dieta, vegano, vegetariano) VALUES (?, ?, ?, ?, ?)", (user, pwd1, dieta, vegano, vegetariano))
             conn.commit()
             conn.close()
         except sqlite3.IntegrityError:
@@ -95,6 +101,49 @@ class MainWindow(QMainWindow):
         # Después de registrar, cerramos la ventana de registro y volvemos a la de login
         self.register_window.close()
         self.open_login()
+        
+    def handle_login(self):
+        """Procesa los datos ingresados en el formulario de login."""
+        user = self.login_ui.txt_userLogin.toPlainText().strip()
+        pwd = self.login_ui.txt_pwdLogin.toPlainText()
+
+        if not user or not pwd:
+            QMessageBox.warning(self.login_window, "Datos incompletos", "Debe completar todos los campos")
+            return
+
+        try:
+            conn = sqlite3.connect("usuarios.db")
+            cursor = conn.cursor()
+            cursor.execute("SELECT dieta, vegano, vegetariano FROM usuarios WHERE usuario = ? AND password = ?", (user, pwd))
+            result = cursor.fetchone()
+            conn.close()
+        except sqlite3.Error as e:
+            QMessageBox.critical(self.login_window, "Error", f"Error de base de datos: {e}")
+            return
+
+        if result:
+            # Almacenar las opciones del usuario
+            self.user_options = {
+                'dieta': result[0],
+                'vegano': result[1],
+                'vegetariano': result[2]
+            }
+            QMessageBox.information(self.login_window, "Login", "Inicio de sesión exitoso")
+            # Cerrar la ventana de login y abrir la ventana de recipes
+            self.login_window.close()
+            self.open_recipes()
+        else:
+            QMessageBox.warning(self.login_window, "Error", "Usuario o contraseña incorrectos")
+        
+    def open_recipes(self):
+        """Abre la ventana de recetas y oculta la ventana principal."""
+        self.recipes_window = QMainWindow()
+        self.recipes_ui = Ui_recipes()
+        self.recipes_ui.setupUi(self.recipes_window)
+        # Crear el controlador para manejar la búsqueda de recetas
+        self.recipes_controller = RecipesController(self.recipes_ui, self.recipes_window, self.user_options)
+        self.recipes_window.show()
+        self.hide()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
