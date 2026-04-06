@@ -66,6 +66,13 @@ class MainWindow(QMainWindow):
             self.register_ui.chk_vegetarianRegisterN.toggled.connect(
                 lambda checked: self.register_ui.chk_vegetarianRegisterY.setChecked(not checked)
             )
+            # Hacer que vegano y vegetariano sean mutuamente excluyentes
+            self.register_ui.chk_veganRegisterY.toggled.connect(
+                lambda checked: self.register_ui.chk_vegetarianRegisterY.setChecked(False) if checked else None
+            )
+            self.register_ui.chk_vegetarianRegisterY.toggled.connect(
+                lambda checked: self.register_ui.chk_veganRegisterY.setChecked(False) if checked else None
+            )
         self.register_window.show()
         self.hide()
 
